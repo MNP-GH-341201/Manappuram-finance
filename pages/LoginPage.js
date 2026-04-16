@@ -1,14 +1,13 @@
 const { expect } = require('@playwright/test');
+const { loginLocators } = require('../locators/locators');
 
 class LoginPage {
   constructor(page) {
     this.page = page;
-
-    // Elements
-    this.employeeIdInput = page.getByPlaceholder('Employee ID');
-    this.passwordInput = page.getByPlaceholder('Password');
-    this.loginButton = page.getByRole('button', { type: 'submit' });
-    this.branchText = page.getByText('SULTAN PET');
+    this.employeeIdInput = page.locator(loginLocators.employeeIdInput);
+    this.passwordInput = page.locator(loginLocators.passwordInput);
+    this.loginButton = page.locator(loginLocators.loginButton);
+    this.branchText = page.locator(loginLocators.branchText);
   }
 
   async goto(url) {
@@ -27,4 +26,3 @@ class LoginPage {
 }
 
 module.exports = { LoginPage };
-``

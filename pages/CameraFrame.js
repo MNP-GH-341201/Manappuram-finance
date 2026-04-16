@@ -1,44 +1,52 @@
-const { expect } = require('@playwright/test');
+const { cameraFrameLocators } = require('../locators/locators');
 
 class CameraFrame {
   constructor(page) {
     this.page = page;
-    this.frame = page.frameLocator('iframe[src*="hyperverge"]');
+    this.frame = page.frameLocator(cameraFrameLocators.frame);
 
-    // Elements
-    this.disabledCameraIcon = this.frame.locator('#hv-camera-icon-image');
-    this.capturePhotoButton = this.frame.getByText('Capture Photo');
-    this.errorIcon = page.locator('.hv-retake-screen-exclamation');
+    this.cameraLoader = this.frame.locator(
+      cameraFrameLocators.cameraLoader
+    );
+    this.captureButton = this.frame.locator(
+      cameraFrameLocators.captureButton
+    );
+    this.proceedCapture = this.frame.locator(
+      cameraFrameLocators.proceedCapture
+    );
+    this.errorIcon = this.frame.locator(
+      cameraFrameLocators.errorIcon
+    );
   }
 
   async waitForCameraReady() {
-    await expect(this.disabledCameraIcon).toBeHidden({
-      timeout: 60000,
-    });
+    console.log('⏳ Waiting for camera...');
 
-    await this.capturePhotoButton.waitFor({
-      state: 'visible',
-      timeout: 30000,
-    });
+    await this.proceedCapture
+      .waitFor({ state: 'visible', timeout: 5000 })
+      .then(() => this.proceedCapture.click())
+      .catch(() => { });
+
+    await this.cameraLoader
+      .waitFor({ state: 'hidden', timeout: 15000 })
+      .catch(() => console.log('⚠ No loader found'));
+
+    await this.captureButton.waitFor({ state: 'visible', timeout: 10000 });
+    console.log('✅ Camera Ready');
   }
 
-  async captureWithRetry(maxAttempts = 5) {
-    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-      console.log(`📸 Capture attempt ${attempt}`);
+  async captureWithRetry(max = 5) {
+    for (let i = 1; i <= max; i++) {
+      await this.captureButton.click();
+      const error = await this.errorIcon.isVisible().catch(() => false);
 
-      await this.capturePhotoButton.click({ force: true });
-      await this.page.waitForTimeout(3000);
-
-      const hasError = (await this.errorIcon.count()) > 0;
-      if (!hasError) {
-        console.log('✅ Photo captured successfully');
+      if (!error) {
+        console.log('✅ Photo captured');
         return;
       }
-
-      console.log('❌ Capture failed, retrying...');
+      console.log(`🔁 Retry ${i}`);
     }
-
-    throw new Error('❌ Photo capture failed after maximum retries');
+    throw new Error('LIVE_CAMERA_CAPTURE_FAILED');
   }
 }
 

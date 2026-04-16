@@ -1,13 +1,7 @@
-const { defineConfig, devices } = require('@playwright/test');
+const { defineConfig } = require('@playwright/test');
 
 module.exports = defineConfig({
-  use: {
-    browserName: 'firefox',
-    channel: 'firefox',
-    headless: false,
-  },
   testDir: './tests',
-
   timeout: 60 * 1000,
 
   expect: {
@@ -18,6 +12,7 @@ module.exports = defineConfig({
   workers: 1,
 
   reporter: [['html', { open: 'never' }]],
+
   projects: [
     {
       name: 'firefox',
@@ -25,8 +20,15 @@ module.exports = defineConfig({
         browserName: 'firefox',
         channel: 'firefox',
         headless: false,
+
+        // ✅ CUSTOM APP CONFIG (IMPORTANT)
+        appUrl: 'https://uatonpay.manappuram.com/hyperverge/#/login',
+
+        credentials: {
+          employeeId: '406653',
+          password: 'soft1234',
+        },
       },
     },
   ],
 });
-``
