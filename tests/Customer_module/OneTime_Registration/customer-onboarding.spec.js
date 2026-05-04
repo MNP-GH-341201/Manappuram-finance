@@ -1,20 +1,20 @@
 const { test } = require('@playwright/test');
-const { LoginPage } = require('../../../pages/LoginPage');
-const { CustomerVerificationPage } = require('../../../pages/OneTime_CustomerVerificationPage');
-const { CameraFrame } = require('../../../pages/CameraFrame');
+const { LoginPage } = require('../../../pages/customer_module/LoginPage');
+const { CustomerVerificationPage } = require('../../../pages/customer_module/OneTime_CustomerVerificationPage');
+const { CameraFrame } = require('../../../pages/customer_module/CameraFrame');
 
 test('Complete onboarding with live camera', async ({ page }, testInfo) => {
   // ✅ Read values from playwright.config.js
-  const { appUrl, credentials } = testInfo.project.use;
+  const { CUSTOMER_APP_URL, credentials } = testInfo.project.use;
 
   const loginPage = new LoginPage(page);
   const customerPage = new CustomerVerificationPage(page);
   const cameraFrame = new CameraFrame(page);
 
-  await loginPage.goto(appUrl);
+  await loginPage.goto(CUSTOMER_APP_URL);
   await loginPage.login(
-    credentials.employeeId,
-    credentials.password
+    credentials.customerEmployeeId,
+    credentials.customerPassword
   );
 
   await customerPage.navigateToVerification();

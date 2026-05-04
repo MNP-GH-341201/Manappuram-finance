@@ -1,5 +1,5 @@
 const { expect } = require('@playwright/test');
-const { loginLocators } = require('../locators/locators');
+const { loginLocators } = require('../../locators/locators');
 
 class LoginPage {
   constructor(page) {
@@ -7,11 +7,11 @@ class LoginPage {
     this.employeeIdInput = page.locator(loginLocators.employeeIdInput);
     this.passwordInput = page.locator(loginLocators.passwordInput);
     this.loginButton = page.locator(loginLocators.loginButton);
-    this.branchText = page.locator(loginLocators.branchText);
+    this.CustomerModulebranchText = page.locator(loginLocators.CustomerModulebranchText);
   }
 
-  async goto(url) {
-    await this.page.goto(url, {
+  async goto(CUSTOMER_APP_URL) {
+    await this.page.goto(CUSTOMER_APP_URL, {
       waitUntil: 'domcontentloaded',
       timeout: 160000,
     });

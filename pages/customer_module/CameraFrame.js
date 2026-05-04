@@ -1,4 +1,4 @@
-const { cameraFrameLocators } = require('../locators/locators');
+const { cameraFrameLocators } = require('../../locators/locators');
 
 class CameraFrame {
   constructor(page) {
