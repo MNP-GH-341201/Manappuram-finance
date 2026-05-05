@@ -26,11 +26,25 @@ const loginLocators = {
   employeeIdInput: "input[placeholder='Employee ID']",
   passwordInput: "input[placeholder='Password']",
   loginButton: "button[type='submit']",
-  branchText: "text=SULTAN PET",
+  CustomerModulebranchText: "text=SULTAN PET",
+  CGLmodulebranchText: "text=KANJIKODE",
+};
+const CGLloginLocators = {
+  employeeIdInput: "input[placeholder='Employee ID']",
+  passwordInput: "input[placeholder='Password']",
+  loginButton: "button[type='submit']",
+  branchText: "text=KANJIKODE",
+};  
+const inventoryCreationLocators = {
+  menubar: "//span[normalize-space()='CGL']",
+  inventoryMenu: "(//span[@class='mat-button-wrapper'])[11]",
+  addInventoryButton: "//a[@id='menu-item-14']//span[@class='menu-title'][normalize-space()='Add Inventory']",
 };
 
 module.exports = {
   cameraFrameLocators,
   customerVerificationLocators,
   loginLocators,
+  CGLloginLocators,
+  inventoryCreationLocators,
 };

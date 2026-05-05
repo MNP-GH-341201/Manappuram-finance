@@ -1,6 +1,6 @@
 const { test } = require('@playwright/test');
-const { LoginPage } = require('../../../pages/LoginPage');
-const { CustomerVerificationPage } = require('../../../pages/OneTime_CustomerVerificationPage');
+const { LoginPage } = require('../../../pages/customer_module/LoginPage');
+const { CustomerVerificationPage } = require('../../../pages/customer_module/OneTime_CustomerVerificationPage');
 
 
 test('Complete add customer flow', async ({ page }, testInfo) => {

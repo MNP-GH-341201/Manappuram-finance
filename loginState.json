@@ -1,0 +1,15 @@
+{
+  "cookies": [
+    {
+      "name": "ASP.NET_SessionId",
+      "value": "j1s300w2jxorpicxmo01ugrn",
+      "domain": "uatapp.manappuram.net",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Strict"
+    }
+  ],
+  "origins": []
+}

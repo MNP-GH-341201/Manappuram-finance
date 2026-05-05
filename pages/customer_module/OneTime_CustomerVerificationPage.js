@@ -1,5 +1,5 @@
 const { expect } = require('@playwright/test');
-const { customerVerificationLocators } = require('../locators/locators');
+const { customerVerificationLocators } = require('../../locators/locators');
 
 class CustomerVerificationPage {
   constructor(page) {
@@ -20,13 +20,6 @@ class CustomerVerificationPage {
     this.searchButton = page.locator(
       customerVerificationLocators.searchButton
     );
-
-    // this.idDropdown = page.locator(
-    //   customerVerificationLocators.idDropdown
-    // );
-    // this.copyOfVoterIdOption = page.locator(
-    //   customerVerificationLocators.copyOfVoterIdOption
-    // );
 
     this.proceedHereButton = page.locator(
       customerVerificationLocators.proceedHereButton
