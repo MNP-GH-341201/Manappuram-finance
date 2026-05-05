@@ -1,6 +1,5 @@
 const { expect } = require('@playwright/test');
 const { loginLocators } = require('../locators/locators');
-
 class LoginPage {
   constructor(page) {
     this.page = page;
