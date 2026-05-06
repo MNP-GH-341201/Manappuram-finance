@@ -24,9 +24,23 @@ export async function uploadVendorDocument(page, {
 }) {
   await page.locator('#ddl_doc').selectOption(String(docValue));
 
-  if (kycTypeValue) await page.locator('#kycType').selectOption(String(kycTypeValue));
-  if (aadharValue) {
-    await page.getByRole('textbox', { name: /Enter Aadharcard Number/i }).fill(String(aadharValue));
+ if (kycTypeValue) {
+    const kycType = page.locator('#kycType');
+
+    await kycType.waitFor({ state: 'visible', timeout: 15000 });
+
+    await page.waitForFunction(
+      el => el.options.length > 0,
+      await kycType.elementHandle()
+    );
+
+    await kycType.selectOption(String(kycTypeValue));
+  }
+
+if (aadharValue) {
+    await page
+      .getByRole('textbox', { name: /Enter Aadharcard Number/i })
+      .fill(String(aadharValue));
   }
 
   await page.locator('#imgFileType').setInputFiles(filePath);

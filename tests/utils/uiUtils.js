@@ -28,7 +28,7 @@ export async function clickAndHandleDialog(page, clickLocator, {
     await dialog.dismiss().catch(() => {});
     return { handled: true, ignored: true, message: msg };
   }
-
+ 
   if (actionForOtherDialogs === 'dismiss') {
     await dialog.dismiss().catch(() => {});
   } else {
@@ -38,6 +38,6 @@ export async function clickAndHandleDialog(page, clickLocator, {
   return { handled: true, ignored: false, message: msg };
 }
 
-export async function pickDateInJqueryCalendar(page, dayText) {
-  await page.locator(`.ui-datepicker-calendar a:text-is("${dayText}")`).first().click();
+export async function pickDateInJqueryCalendar(page) {
+  await page.locator(`.ui-datepicker-calendar a:text-is('4)`).first().click();
 }

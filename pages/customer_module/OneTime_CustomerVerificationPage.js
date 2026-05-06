@@ -43,40 +43,41 @@ class CustomerVerificationPage {
   }
 
   async searchCustomer(customerId) {
-    await this.customerIdInput.waitFor({ state: 'visible' });
-    await this.customerIdInput.fill(customerId);
-    await this.searchButton.click();
-    const selectOptions = this.page.getByLabel('Please Select Your ID');
-    await selectOptions.click();
-    const voterIdOption = this.page.getByRole('option', {
-      name: 'COPY OF VOTERSID',
-    });
-    await voterIdOption.click();
+  await this.customerIdInput.fill(customerId);
+  await this.searchButton.click();
 
-    // ✅ Wait for Proceed Here button
-    await this.proceedHereButton.waitFor({
-      state: 'visible',
-      timeout: 10000,
-    });
+  await this.page.getByLabel('Please Select Your ID').click();
+  await this.page.getByRole('option', { name: 'COPY OF VOTERSID' }).click();
 
-    await this.proceedHereButton.click();
+  await this.proceedHereButton.waitFor({ state: 'visible', timeout: 10000 });
+  await this.proceedHereButton.click();
 
-    // ✅ Validate mobile verification popup
-    await expect(this.mobileVerificationPopup).toBeVisible({
-      timeout: 10000,
-    });
+  // ✅ Wait for iframe to load
+  await this.page.waitForSelector('iframe', { timeout: 20000 });
 
-    console.log('✅ Mobile verification popup visible');
+  const hvFrame = this.page.frameLocator('iframe');
 
-    // ✅ Camera / long wait step
-    await this.proceedToCaptureButton.waitFor({
-      state: 'visible',
-      timeout: 160000,
-    });
+  // ✅ Robust popup locator
+  const mobilePopup = hvFrame.getByText(
+    'Complete your verification',
+    { exact: false }
+  );
 
-    await this.proceedToCaptureButton.click();
-  }
+  await expect(mobilePopup).toBeVisible({ timeout: 20000 });
+  console.log('✅ Mobile verification popup visible');
+
+  // ✅ Proceed
+  await this.proceedToCaptureButton.waitFor({
+    state: 'visible',
+    timeout: 160000,
+  });
+
+  await this.proceedToCaptureButton.click();
+}
 }
 
 module.exports = { CustomerVerificationPage };
 ``
+
+
+//text=Complete your verification on Mobile browser

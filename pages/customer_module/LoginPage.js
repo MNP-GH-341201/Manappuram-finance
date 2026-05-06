@@ -21,7 +21,7 @@ class LoginPage {
     await this.employeeIdInput.fill(employeeId);
     await this.passwordInput.fill(password);
     await this.loginButton.click();
-    await expect(this.branchText).toBeVisible({ timeout: 60000 });
+    await expect(this.CustomerModulebranchText).toBeVisible({ timeout: 60000 });
   }
 }
 
