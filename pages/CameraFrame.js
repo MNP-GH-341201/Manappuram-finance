@@ -3,51 +3,58 @@ const { cameraFrameLocators } = require('../locators/locators');
 class CameraFrame {
   constructor(page) {
     this.page = page;
-    this.frame = page.frameLocator(cameraFrameLocators.frame);
-
-    this.cameraLoader = this.frame.locator(
-      cameraFrameLocators.cameraLoader
-    );
-    this.captureButton = this.frame.locator(
-      cameraFrameLocators.captureButton
-    );
-    this.proceedCapture = this.frame.locator(
-      cameraFrameLocators.proceedCapture
-    );
+  }
+ 
+  async initFrame() {
+    await this.page.waitForSelector('#hv-instructions-capture-screen', { timeout: 3000 });
+    await this.page.waitForTimeout(2000);
+    this.frame = this.page.frameLocator('#hv-instructions-capture-screen');
+ 
     this.errorIcon = this.frame.locator(
-      cameraFrameLocators.errorIcon
+      'img.hv-retake-screen-exclamation'
+    );
+
+    this.captureButton = this.frame.locator(
+      'button:has-text("Capture Photo")'
     );
   }
 
-  async waitForCameraReady() {
-    console.log('⏳ Waiting for camera...');
-
-    await this.proceedCapture
-      .waitFor({ state: 'visible', timeout: 5000 })
-      .then(() => this.proceedCapture.click())
-      .catch(() => { });
-
-    await this.cameraLoader
-      .waitFor({ state: 'hidden', timeout: 15000 })
-      .catch(() => console.log('⚠ No loader found'));
-
+  async capturePhoto() {
     await this.captureButton.waitFor({ state: 'visible', timeout: 10000 });
-    console.log('✅ Camera Ready');
+    await this.page.waitForTimeout(2000);
+    await this.captureButton.click({force: true});
   }
 
-  async captureWithRetry(max = 5) {
-    for (let i = 1; i <= max; i++) {
-      await this.captureButton.click();
-      const error = await this.errorIcon.isVisible().catch(() => false);
+  async captureWithRetry(maxAttempts = 5) {
+    console.log('📸 Checking for camera error...');
 
-      if (!error) {
-        console.log('✅ Photo captured');
+    let errorVisible = await this.errorIcon.isVisible().catch(() => false);
+    console.log('❌ ERROR PHOTO ENABLED:', errorVisible);
+
+    // ✅ If no error initially → proceed
+    if (!errorVisible) {
+      console.log('✅ No initial error found. Proceeding...');
+      return;
+    }
+
+    // ✅ Retry loop
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      console.log(`🔁 Attempt #${attempt}`);
+
+      await this.capturePhoto();
+
+      // wait for SDK processing
+      await this.page.waitForTimeout(3000);
+
+      errorVisible = await this.errorIcon.isVisible().catch(() => false);
+
+      if (!errorVisible) {
+        console.log('✅ Capture successful, error cleared');
         return;
       }
-      console.log(`🔁 Retry ${i}`);
     }
-    throw new Error('LIVE_CAMERA_CAPTURE_FAILED');
+
+    throw new Error('LIVE_CAMERA_CAPTURE_FAILED_AFTER_RETRIES');
   }
 }
-
 module.exports = { CameraFrame };

@@ -81,7 +81,7 @@ class CustomerVerificationPage {
       timeout: 160000,
     });
 
-    await this.proceedToCaptureButton.click();
+    await this.proceedToCaptureButton.click( {force: true} );
   }
 }
 

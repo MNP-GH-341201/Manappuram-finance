@@ -20,6 +20,9 @@ const customerVerificationLocators = {
 
   mobileVerificationPopup:
     "text=Complete your verification on Mobile browser",
+    captureSuccess: '.capture-success',
+captureSuccess: 'text=Captured successfully',
+captureSuccess: '[data-testid="capture-success"]'
 };
 
 const loginLocators = {
