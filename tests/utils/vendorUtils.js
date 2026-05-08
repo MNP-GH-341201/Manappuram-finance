@@ -61,4 +61,3 @@ export async function expectTextAndExtractAfterColon(page, containsText, timeout
   const value = (text.split(':')[1] || '').trim();
   return value;
 }
-``

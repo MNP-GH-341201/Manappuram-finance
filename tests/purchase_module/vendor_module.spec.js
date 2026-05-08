@@ -182,13 +182,13 @@ test.describe.serial('Vendor Management Flow (Login once, multiple tests)', () =
     //await page.waitForTimeout(1000);
     await page.selectOption('#ddl_dist', {label: 'KOLLAM'});
     //await page.waitForTimeout(1000);
-    await page.selectOption('#ddl_bank', {label: 'INDIAN BANK'});
+    await page.selectOption('#ddl_bank', {label: 'INDIAN BANK'}); 
     //await page.waitForTimeout(3000);
     await page.selectOption('#ddl_branch', { label: 'KOLLAM' });
     await page.waitForTimeout(3000);
     await page.selectOption('#ddl_acct', { label: 'SAVINGS BANK' });
     await page.waitForTimeout(3000);
-   
+                                             
 const accNo = generateAccountNo();
 
 await page.locator('#txtaccno').fill(accNo);
@@ -209,12 +209,23 @@ await expect(page.locator('#txtaccno1')).toHaveValue(accNo, { timeout: 2000 });
       await  page.locator('#cpbtnSubmit1').click();
   });
 
-  test('Test-4: Documents / Documents using captured Vendor ID', async ({ page }) => {
+  // TEST 4 – DOCUMENT UPLOAD (FIXED ✅)
+  // ==================================================
+  test('Test-4: Documents Upload', async ({ page }) => {
+
+    // ✅ Register dialog handler ONCE
+    page.on('dialog', async dialog => {
+      console.log('✅ Alert:', dialog.message());
+      await dialog.dismiss();
+    });
+
     expect(vendorId).not.toBe('');
+
     await page.goto(INDEX_URL);
     await page.getByRole('link', { name: 'VENDOR MANAGEMENT' }).click();
     await page.locator('//a[@href="../Purchase/VendorManagmnt.aspx?frmid=1"]').click();
     await page.getByRole('tab', { name: 'Documents' }).click();
+
     await page.waitForTimeout(1000);
     const searchBox = page.getByRole('textbox', { name: 'Search..' });
 
@@ -223,61 +234,32 @@ await expect(page.locator('#txtaccno1')).toHaveValue(accNo, { timeout: 2000 });
     await page.getByText(vendorId).first().click();
     await page.waitForSelector('input[onclick="SearchVendorDocument()"]', { timeout: 2000 });
     await page.locator('input[onclick="SearchVendorDocument()"]').click({ force: true });
-    await page.getByRole('button', { name: 'OK' }).click();
-    await page.locator('#ddl_doc').selectOption('2');
-    await page.locator('#imgFileType')
-      .setInputFiles('tests/image/cheque.pdf');
-       await page.getByRole('button', { name: 'Upload' }).click();
- 
-  page.on('dialog', dialog => {
-    console.log(`Dialog message: ${dialog.message()}`);
-    dialog.dismiss().catch(() => {});
-  });
-  await page.waitForTimeout(1000);
- 
-  await page.locator('#ddl_doc').selectOption('3');
-   await page.locator('#imgFileType')
-      .setInputFiles('tests/image/cheque.pdf');
-       await page.getByRole('button', { name: 'Upload' }).click();
- 
-  page.on('dialog', dialog => {
-    console.log(`Dialog message: ${dialog.message()}`);
-    dialog.dismiss().catch(() => {});
-  });
-  await page.waitForTimeout(1000);
-  await page.locator('#ddl_doc').selectOption('6');
-  await page.locator('#imgFileType')
-      .setInputFiles('tests/image/cheque.pdf');
-       await page.getByRole('button', { name: 'Upload' }).click();
-       page.on('dialog', dialog => {
-    console.log(`Dialog message: ${dialog.message()}`);
-    dialog.dismiss().catch(() => {});
-  });
-  await page.waitForTimeout(1000);
-  await page.locator('#ddl_doc').selectOption('8');
-  await page.waitForTimeout(2000);
-  await page.locator('#kycType').selectOption('4');
-  await page.waitForTimeout(2000);
-  //await page.getByRole('textbox', { name: 'Enter Aadharcard Number' }).click();
-  await page.getByRole('textbox', { name: 'Enter Aadharcard Number' }).fill('35323453563452');
-  await page.locator('#imgFileType')
-      .setInputFiles('tests/image/cheque.pdf');
-       await page.getByRole('button', { name: 'Upload' }).click();
-       page.on('dialog', dialog => {
-    console.log(`Dialog message: ${dialog.message()}`);
-    dialog.dismiss().catch(() => {});
-  });
-  await page.waitForTimeout(1000);
-  await page.locator('#ddl_doc').selectOption('10');
-  await page.locator('#imgFileType')
-      .setInputFiles('tests/image/cheque.pdf');
-       await page.getByRole('button', { name: 'Upload' }).click();
-  page.on('dialog', dialog => {
-    console.log(`Dialog message: ${dialog.message()}`);
-    dialog.dismiss().catch(() => {});
-  });
-  await page.waitForTimeout(1000);
-  await page.getByRole('button', { name: 'Exit' }).click();
+    // await page.getByRole('button', { name: 'OK' }).click();
 
-}); 
+    const uploadDoc = async (docType) => {
+      await page.locator('#ddl_doc').selectOption(docType);
+      await page
+        .locator('#imgFileType')
+        .setInputFiles('tests/image/cheque.pdf');
+      await page.getByRole('button', { name: 'Upload' }).click();
+      await page.waitForTimeout(1000);
+    };
+
+    await uploadDoc('2');
+    await uploadDoc('3');
+    await uploadDoc('6');
+
+    await page.locator('#ddl_doc').selectOption('8');
+    await page.locator('#kycType').selectOption('4');
+    await page.waitForTimeout(2000);
+    await page
+      .getByRole('textbox', { name: 'Enter Aadharcard Number' })
+      .fill('35323453563452');
+
+    await uploadDoc('8');
+    await uploadDoc('10');
+
+    await page.getByRole('button', { name: 'Exit' }).click();
+  });
+
 });

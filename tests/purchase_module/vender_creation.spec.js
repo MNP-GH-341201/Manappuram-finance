@@ -67,12 +67,12 @@ test.describe.serial('Vendor Management Flow (Login once, multiple tests)', () =
     await page.getByPlaceholder("Add Annual Turnover").fill('1000');
 
     await page.getByPlaceholder("Client Registration Date").click();
-    await pickDateInJqueryCalendar(page, '4');
+    await pickDateInJqueryCalendar(page, '6');
 
     await page.selectOption('#ddl_EST', { label: 'Individual/ sole proprietorship' });
 
     await page.locator('#VendorDateOfBirth').click();
-    await pickDateInJqueryCalendar(page, '4');
+    await pickDateInJqueryCalendar(page, '6');
 
     const confirmBtn = page.getByRole('button', { name: /confirm/i });
     await confirmBtn.scrollIntoViewIfNeeded();

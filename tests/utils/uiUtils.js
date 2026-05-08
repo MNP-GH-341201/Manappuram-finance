@@ -39,5 +39,5 @@ export async function clickAndHandleDialog(page, clickLocator, {
 }
 
 export async function pickDateInJqueryCalendar(page) {
-  await page.locator(`.ui-datepicker-calendar a:text-is('4)`).first().click();
+  await page.locator(`.ui-datepicker-calendar`).first().click();
 }
