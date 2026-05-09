@@ -5,15 +5,15 @@ const { CustomerVerificationPage } = require('../../../pages/OneTime_CustomerVer
 
 test('Complete add customer flow', async ({ page }, testInfo) => {
   // ✅ Read values from playwright.config.js
-  const { appUrl, credentials } = testInfo.project.use;
+  const { CUSTOMER_APP_URL, credentials } = testInfo.project.use;
 
   const loginPage = new LoginPage(page);
   const customerPage = new CustomerVerificationPage(page);
 
-   await loginPage.goto(appUrl);
+   await loginPage.goto(CUSTOMER_APP_URL);
   await loginPage.login(
-    credentials.employeeId,
-    credentials.password
+    credentials.customerEmployeeId,
+    credentials.customerPassword
   );
     await customerPage.navigateToVerification();
 });
