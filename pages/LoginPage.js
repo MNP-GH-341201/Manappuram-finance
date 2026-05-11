@@ -18,7 +18,7 @@ class LoginPage {
 
   async login(employeeId, password) {
     await this.employeeIdInput.fill(employeeId);
-    await this.passwordInput.fill(password);
+    await this.passwordInput.fill(password); 
     await this.loginButton.click();
     await expect(this.branchText).toBeVisible({ timeout: 60000 });
   }

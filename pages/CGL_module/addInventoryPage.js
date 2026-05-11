@@ -1,22 +1,46 @@
-const {test, expect} = require('@playwright/test');
-const { LoginPage } = require('../CGL_module/loginPage');
-
+const { expect } = require('@playwright/test');
+const { inventoryCreationLocators } = require('../../locators/locators');
 
 class AddInventoryPage {
-    constructor(page) {
-        this.page = page;
-        this.menubar = page.locator("//span[normalize-space()='CGL']");
-        this.inventoryMenu = page.locator("(//span[@class='mat-button-wrapper'])[11]");
-        this.addInventoryButton = page.locator("//mat-icon[@role='img'][normalize-space()='add_customer']");
-    }
-    async navigateToAddInventory() {
-        await this.menubar.waitFor({ state: 'visible' });
-        await this.menubar.click();
-        await this.inventoryMenu.waitFor({ state: 'visible' });
-        await this.inventoryMenu.click();
-        await this.addInventoryButton.waitFor({ state: 'visible' });
-        await this.addInventoryButton.click();
-    }
+  constructor(page) {
+    this.page = page;
+
+    this.menuBar = page.locator(inventoryCreationLocators.menubar);
+    this.inventoryMenu = page.locator(inventoryCreationLocators.inventoryMenu);
+    this.addInventoryButton = page.locator(inventoryCreationLocators.addInventoryButton);
+
+    this.iUnderstandBtn = page.getByText('I Understand', { exact: true });
+    this.customerIdRadio = page.locator('mat-radio-button', { hasText: 'Customer ID' });
+    this.customerIdInput = page.getByRole('textbox', { name: 'Customer ID' });
+    this.searchBtn = page.getByRole('button', { name: 'Search' });
+
+    this.goToDetailsBtn = page.getByRole('button', { name: 'GO TO DETAILS' });
+    this.closeDialogBtn = page.getByRole('button', { name: 'Close dialog' });
+  }
+
+  async navigateToAddInventory() {
+    await this.menuBar.click();
+    await this.inventoryMenu.click();
+    await this.addInventoryButton.click();
+
+    await expect(this.iUnderstandBtn).toBeVisible({ timeout: 60000 });
+    await this.iUnderstandBtn.click();
+  }
+
+  async searchCustomerById(page) {
+    await this.customerIdRadio.click();
+    await page.getByplaceholder('Customer ID').type(32130020080272);
+    await expect(this.searchBtn).toBeEnabled({ timeout: 60000 });
+    await this.searchBtn.click();
+
+    await this.page.getByRole('gridcell', { name: HGFHGFHF }).click();
+    await this.goToDetailsBtn.click();
+  }
+
+  async closeDialogs() {
+    await this.closeDialogBtn.first().click();
+    await this.closeDialogBtn.first().click();
+  }
 }
 
 module.exports = { AddInventoryPage };

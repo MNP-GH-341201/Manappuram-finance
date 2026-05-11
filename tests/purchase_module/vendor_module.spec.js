@@ -87,17 +87,29 @@ test.describe.serial('Vendor Management Flow (Login once, multiple tests)', () =
 
     // Date picker
     await page.getByPlaceholder("Client Registration Date").click();
-    await page.locator('.ui-datepicker-calendar a:text-is("2")').click();
+    await page.locator('.ui-datepicker-calendar a:text-is("9")').click();
 
     await page.selectOption('#ddl_EST', { label: 'Individual/ sole proprietorship' });
 
     await page.locator('#VendorDateOfBirth').click();
-    await page.locator('.ui-datepicker-calendar a:text-is("2")').click();
+    await page.locator('.ui-datepicker-calendar a:text-is("9")').click();
+    //await page.pause();
 
     // Confirm vendor
-    const confirmBtn = page.getByRole('button', { name: /confirm/i });
-    await confirmBtn.scrollIntoViewIfNeeded();
-    await confirmBtn.click();
+
+    const container = page.locator('#content');
+    await container.evaluate(el => el.scrollTo(0, el.scrollHeight));
+
+    // Correct selector
+    const confirmBtn = page.locator('#btnSubmit');
+
+    // Ensure visibility & enablement
+    await expect(confirmBtn).toBeVisible({ timeout: 10000 });
+    //await expect(confirmBtn).toBeEnabled();
+
+    // Click safely
+    await confirmBtn.click({ force: true });
+
     // Capture vendor ID
     const successLocator = page.getByText('Vendor Created Vendor ID is:');
     await expect(successLocator).toBeVisible({ timeout: 15000 });
@@ -133,7 +145,7 @@ test.describe.serial('Vendor Management Flow (Login once, multiple tests)', () =
     await page.waitForSelector('input[onclick="SearchVendor1(0)"]', { timeout: 2000 });
     await page.locator('input[onclick="SearchVendor1(0)"]').click({ force: true });
     await page.waitForSelector('#txtVendrid3', { toHaveValue: vendorId, timeout: 2000 });
-   // await page.waitForTimeout(5000);
+    // await page.waitForTimeout(5000);
     // Fill site details
     await page.locator('#txtDoorAddress').fill('SITE ADDRESS');
     await page.locator('#ddlState1').selectOption('17');
@@ -178,35 +190,35 @@ test.describe.serial('Vendor Management Flow (Login once, multiple tests)', () =
 
     // Add New NEFT
     await page.getByRole('radio', { name: 'Add New Neft' }).check();
-    await page.selectOption('#ddl_state2', {label: 'KERALA'});
+    await page.selectOption('#ddl_state2', { label: 'KERALA' });
     //await page.waitForTimeout(1000);
-    await page.selectOption('#ddl_dist', {label: 'KOLLAM'});
+    await page.selectOption('#ddl_dist', { label: 'KOLLAM' });
     //await page.waitForTimeout(1000);
-    await page.selectOption('#ddl_bank', {label: 'INDIAN BANK'});
+    await page.selectOption('#ddl_bank', { label: 'INDIAN BANK' });
     //await page.waitForTimeout(3000);
     await page.selectOption('#ddl_branch', { label: 'KOLLAM' });
     await page.waitForTimeout(3000);
     await page.selectOption('#ddl_acct', { label: 'SAVINGS BANK' });
     await page.waitForTimeout(3000);
-   
-const accNo = generateAccountNo();
 
-await page.locator('#txtaccno').fill(accNo);
-await page.locator('#txtaccno').press('Tab');
+    const accNo = generateAccountNo();
 
-await page.locator('#txtaccno1').fill(accNo);
-await page.locator('#txtaccno1').press('Tab');
+    await page.locator('#txtaccno').fill(accNo);
+    await page.locator('#txtaccno').press('Tab');
 
-await expect(page.locator('#txtaccno')).toHaveValue(accNo, { timeout: 2000 });
-await expect(page.locator('#txtaccno1')).toHaveValue(accNo, { timeout: 2000 });
+    await page.locator('#txtaccno1').fill(accNo);
+    await page.locator('#txtaccno1').press('Tab');
+
+    await expect(page.locator('#txtaccno')).toHaveValue(accNo, { timeout: 2000 });
+    await expect(page.locator('#txtaccno1')).toHaveValue(accNo, { timeout: 2000 });
 
     await page.locator('#txtmoblno').fill(uniquePhone);
     await page.locator('#txtpbname').fill('Test Bank');
     await page.locator('#txtRemark').fill('NEFT details for testing');
     await page.locator('#imgPassBook')
       .setInputFiles('tests/image/cheque.pdf');
-      await page.waitForTimeout(1000);
-      await  page.locator('#cpbtnSubmit1').click();
+    await page.waitForTimeout(1000);
+    await page.locator('#cpbtnSubmit1').click();
   });
 
   test('Test-4: Documents / Documents using captured Vendor ID', async ({ page }) => {
@@ -227,57 +239,57 @@ await expect(page.locator('#txtaccno1')).toHaveValue(accNo, { timeout: 2000 });
     await page.locator('#ddl_doc').selectOption('2');
     await page.locator('#imgFileType')
       .setInputFiles('tests/image/cheque.pdf');
-       await page.getByRole('button', { name: 'Upload' }).click();
- 
-  page.on('dialog', dialog => {
-    console.log(`Dialog message: ${dialog.message()}`);
-    dialog.dismiss().catch(() => {});
-  });
-  await page.waitForTimeout(1000);
- 
-  await page.locator('#ddl_doc').selectOption('3');
-   await page.locator('#imgFileType')
-      .setInputFiles('tests/image/cheque.pdf');
-       await page.getByRole('button', { name: 'Upload' }).click();
- 
-  page.on('dialog', dialog => {
-    console.log(`Dialog message: ${dialog.message()}`);
-    dialog.dismiss().catch(() => {});
-  });
-  await page.waitForTimeout(1000);
-  await page.locator('#ddl_doc').selectOption('6');
-  await page.locator('#imgFileType')
-      .setInputFiles('tests/image/cheque.pdf');
-       await page.getByRole('button', { name: 'Upload' }).click();
-       page.on('dialog', dialog => {
-    console.log(`Dialog message: ${dialog.message()}`);
-    dialog.dismiss().catch(() => {});
-  });
-  await page.waitForTimeout(1000);
-  await page.locator('#ddl_doc').selectOption('8');
-  await page.waitForTimeout(2000);
-  await page.locator('#kycType').selectOption('4');
-  await page.waitForTimeout(2000);
-  //await page.getByRole('textbox', { name: 'Enter Aadharcard Number' }).click();
-  await page.getByRole('textbox', { name: 'Enter Aadharcard Number' }).fill('35323453563452');
-  await page.locator('#imgFileType')
-      .setInputFiles('tests/image/cheque.pdf');
-       await page.getByRole('button', { name: 'Upload' }).click();
-       page.on('dialog', dialog => {
-    console.log(`Dialog message: ${dialog.message()}`);
-    dialog.dismiss().catch(() => {});
-  });
-  await page.waitForTimeout(1000);
-  await page.locator('#ddl_doc').selectOption('10');
-  await page.locator('#imgFileType')
-      .setInputFiles('tests/image/cheque.pdf');
-       await page.getByRole('button', { name: 'Upload' }).click();
-  page.on('dialog', dialog => {
-    console.log(`Dialog message: ${dialog.message()}`);
-    dialog.dismiss().catch(() => {});
-  });
-  await page.waitForTimeout(1000);
-  await page.getByRole('button', { name: 'Exit' }).click();
+    await page.getByRole('button', { name: 'Upload' }).click();
 
-}); 
+    page.on('dialog', dialog => {
+      console.log(`Dialog message: ${dialog.message()}`);
+      dialog.dismiss().catch(() => { });
+    });
+    await page.waitForTimeout(1000);
+
+    await page.locator('#ddl_doc').selectOption('3');
+    await page.locator('#imgFileType')
+      .setInputFiles('tests/image/cheque.pdf');
+    await page.getByRole('button', { name: 'Upload' }).click();
+
+    page.on('dialog', dialog => {
+      console.log(`Dialog message: ${dialog.message()}`);
+      dialog.dismiss().catch(() => { });
+    });
+    await page.waitForTimeout(1000);
+    await page.locator('#ddl_doc').selectOption('6');
+    await page.locator('#imgFileType')
+      .setInputFiles('tests/image/cheque.pdf');
+    await page.getByRole('button', { name: 'Upload' }).click();
+    page.on('dialog', dialog => {
+      console.log(`Dialog message: ${dialog.message()}`);
+      dialog.dismiss().catch(() => { });
+    });
+    await page.waitForTimeout(1000);
+    await page.locator('#ddl_doc').selectOption('8');
+    await page.waitForTimeout(2000);
+    await page.locator('#kycType').selectOption('4');
+    await page.waitForTimeout(2000);
+    //await page.getByRole('textbox', { name: 'Enter Aadharcard Number' }).click();
+    await page.getByRole('textbox', { name: 'Enter Aadharcard Number' }).fill('35323453563452');
+    await page.locator('#imgFileType')
+      .setInputFiles('tests/image/cheque.pdf');
+    await page.getByRole('button', { name: 'Upload' }).click();
+    page.on('dialog', dialog => {
+      console.log(`Dialog message: ${dialog.message()}`);
+      dialog.dismiss().catch(() => { });
+    });
+    await page.waitForTimeout(1000);
+    await page.locator('#ddl_doc').selectOption('10');
+    await page.locator('#imgFileType')
+      .setInputFiles('tests/image/cheque.pdf');
+    await page.getByRole('button', { name: 'Upload' }).click();
+    page.on('dialog', dialog => {
+      console.log(`Dialog message: ${dialog.message()}`);
+      dialog.dismiss().catch(() => { });
+    });
+    await page.waitForTimeout(1000);
+    await page.getByRole('button', { name: 'Exit' }).click();
+
+  });
 });

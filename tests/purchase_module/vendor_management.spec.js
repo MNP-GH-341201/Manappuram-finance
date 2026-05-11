@@ -83,7 +83,7 @@ test('Login and add new vendor with unique phone and email', async ({ page }) =>
   });
 
   await page.locator('#VendorDateOfBirth').click();
-  await page.locator('.ui-datepicker-calendar a:text-is("18")').click();
+  await page.locator('.ui-datepicker-calendar a:text-is("6")').click();
 
   // ✅ Confirm (stable)
   const confirmBtn = page.getByRole('button', { name: /confirm/i });
