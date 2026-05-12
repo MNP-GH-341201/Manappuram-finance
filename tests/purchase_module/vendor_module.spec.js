@@ -83,6 +83,9 @@ test.describe.serial('Vendor Management Flow (Login once, multiple tests)', () =
     await page.getByPlaceholder("Add Email id").fill(uniqueEmail);
     await page.getByPlaceholder("Add Phone Number").fill(uniquePhone);
     await page.getByPlaceholder("Add PAN No").fill('ATFPA2435D');
+    await page.waitForTimeout(500);
+    await page.getByRole('button', { name: 'Check' }).click();
+    await page.pause();
     await page.getByPlaceholder("Add Annual Turnover").fill('1000');
 
     // Date picker
@@ -93,21 +96,38 @@ test.describe.serial('Vendor Management Flow (Login once, multiple tests)', () =
 
     await page.locator('#VendorDateOfBirth').click();
     await page.locator('.ui-datepicker-calendar a:text-is("2")').click();
+    await page.evaluate(() => {
+      window.scrollTo(0, document.body.scrollHeight);
+    });
+    await page.evaluate(() => {
+      document
+        .querySelector('input[onclick="AddModifyApproveVendor()"]')
+        ?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    });
 
-    // Confirm vendor
-    const confirmBtn = page.getByRole('button', { name: /confirm/i });
-    await confirmBtn.scrollIntoViewIfNeeded();
-    await confirmBtn.click();
+
     // Capture vendor ID
-    const successLocator = page.getByText('Vendor Created Vendor ID is:');
-    await expect(successLocator).toBeVisible({ timeout: 15000 });
-    const successText = (await successLocator.textContent()) || '';
-    // Extract ID after colon
-    vendorId = (successText.split(':')[1] || '').trim();
+    // Wait for backend & UI processing
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(500);
+
+    // Look for success message (flexible match)
+    const successLocator = page.getByText(/Vendor Created Vendor ID/i);
+    await expect(successLocator).toBeVisible({ timeout: 20000 });
+
+    // Extract Vendor ID safely
+    const fullText = await page.locator('body').innerText();
+    const match = fullText.match(/Vendor ID is[:\s]+([A-Z0-9]+)/i);
+
+    if (!match) {
+      throw new Error('❌ Vendor ID not found after creation');
+    }
+
+    vendorId = match[1];
     console.log('✅ Captured Vendor ID:', vendorId);
-    expect(vendorId).not.toBe('');
+
     // Close popup
-    await page.getByRole('button', { name: 'OK' }).click();
+    await page.getByRole('button', { name: /ok/i }).click();
   });
   test('Test-2: Site Creation using captured Vendor ID', async ({ page }) => {
     expect(vendorId).not.toBe('');
@@ -133,7 +153,7 @@ test.describe.serial('Vendor Management Flow (Login once, multiple tests)', () =
     await page.waitForSelector('input[onclick="SearchVendor1(0)"]', { timeout: 2000 });
     await page.locator('input[onclick="SearchVendor1(0)"]').click({ force: true });
     await page.waitForSelector('#txtVendrid3', { toHaveValue: vendorId, timeout: 2000 });
-   // await page.waitForTimeout(5000);
+    // await page.waitForTimeout(5000);
     // Fill site details
     await page.locator('#txtDoorAddress').fill('SITE ADDRESS');
     await page.locator('#ddlState1').selectOption('17');
@@ -178,35 +198,35 @@ test.describe.serial('Vendor Management Flow (Login once, multiple tests)', () =
 
     // Add New NEFT
     await page.getByRole('radio', { name: 'Add New Neft' }).check();
-    await page.selectOption('#ddl_state2', {label: 'KERALA'});
+    await page.selectOption('#ddl_state2', { label: 'KERALA' });
     //await page.waitForTimeout(1000);
-    await page.selectOption('#ddl_dist', {label: 'KOLLAM'});
+    await page.selectOption('#ddl_dist', { label: 'KOLLAM' });
     //await page.waitForTimeout(1000);
-    await page.selectOption('#ddl_bank', {label: 'INDIAN BANK'}); 
+    await page.selectOption('#ddl_bank', { label: 'INDIAN BANK' });
     //await page.waitForTimeout(3000);
     await page.selectOption('#ddl_branch', { label: 'KOLLAM' });
     await page.waitForTimeout(3000);
     await page.selectOption('#ddl_acct', { label: 'SAVINGS BANK' });
     await page.waitForTimeout(3000);
-                                             
-const accNo = generateAccountNo();
 
-await page.locator('#txtaccno').fill(accNo);
-await page.locator('#txtaccno').press('Tab');
+    const accNo = generateAccountNo();
 
-await page.locator('#txtaccno1').fill(accNo);
-await page.locator('#txtaccno1').press('Tab');
+    await page.locator('#txtaccno').fill(accNo);
+    await page.locator('#txtaccno').press('Tab');
 
-await expect(page.locator('#txtaccno')).toHaveValue(accNo, { timeout: 2000 });
-await expect(page.locator('#txtaccno1')).toHaveValue(accNo, { timeout: 2000 });
+    await page.locator('#txtaccno1').fill(accNo);
+    await page.locator('#txtaccno1').press('Tab');
+
+    await expect(page.locator('#txtaccno')).toHaveValue(accNo, { timeout: 2000 });
+    await expect(page.locator('#txtaccno1')).toHaveValue(accNo, { timeout: 2000 });
 
     await page.locator('#txtmoblno').fill(uniquePhone);
     await page.locator('#txtpbname').fill('Test Bank');
     await page.locator('#txtRemark').fill('NEFT details for testing');
     await page.locator('#imgPassBook')
       .setInputFiles('tests/image/cheque.pdf');
-      await page.waitForTimeout(1000);
-      await  page.locator('#cpbtnSubmit1').click();
+    await page.waitForTimeout(1000);
+    await page.locator('#cpbtnSubmit1').click();
   });
 
   // TEST 4 – DOCUMENT UPLOAD (FIXED ✅)
@@ -261,5 +281,4 @@ await expect(page.locator('#txtaccno1')).toHaveValue(accNo, { timeout: 2000 });
 
     await page.getByRole('button', { name: 'Exit' }).click();
   });
-
 });

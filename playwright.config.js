@@ -67,10 +67,10 @@ export default defineConfig({
 
   projects: [
     {
-      name: 'firefox',
+      name: 'Microsoft Edge (Installed)',
       use: {
-        browserName: 'firefox',
-        channel: 'firefox',
+        browserName: 'chromium',
+        channel: 'msedge',
       },
     },
   ],
