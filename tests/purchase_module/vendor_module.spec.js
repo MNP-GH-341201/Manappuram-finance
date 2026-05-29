@@ -41,6 +41,7 @@ test.describe.serial('Vendor Management Flow (Login once, multiple tests)', () =
 
     // Open menu
     await page.locator("(//div[@class='bar1'])[1]").click();
+    
 
     // Add New Vendor
     await page.locator("//a[contains(.,'Add New Vendor')]").hover();
@@ -120,7 +121,7 @@ test.describe.serial('Vendor Management Flow (Login once, multiple tests)', () =
     expect(vendorId).not.toBe('');
     // Close popup
     await page.getByRole('button', { name: 'OK' }).click();
-  });
+  }); 
   test('Test-2: Site Creation using captured Vendor ID', async ({ page }) => {
     expect(vendorId).not.toBe('');
     await page.goto(INDEX_URL);

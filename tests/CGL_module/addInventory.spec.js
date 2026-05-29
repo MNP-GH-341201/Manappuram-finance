@@ -16,9 +16,12 @@ test('Login and Add Inventory flow', async ({ page }, testInfo) => {
   // ✅ Add Inventory
   const addInventoryPage = new AddInventoryPage(page);
   await addInventoryPage.navigateToAddInventory();
+  
+  //await this.waitForLoadingToComplete();
   await addInventoryPage.searchCustomerById(
-    '32130020080272',
-    'HGFHGFHF'
+     '32130020080272',   // ✅ dynamic ID
+    'HGFHGFHF'          // ✅ dynamic name
   );
-  await addInventoryPage.closeDialogs();
+
+ // await addInventoryPage.closeDialogs();
 });

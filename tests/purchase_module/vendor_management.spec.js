@@ -7,7 +7,7 @@ test('Login and add new vendor with unique phone and email', async ({ page }) =>
   const uniquePhone = '9' + String(timestamp).slice(-9); // 10-digit
   const uniqueEmail = `vendor_${timestamp}@gmail.com`;
 
-  console.log('✅ Phone:', uniquePhone);
+  console.log('✅ Phone:', uniquePhone);   
   console.log('✅ Email:', uniqueEmail);
 
   await page.goto('https://uatapp.manappuram.net/purchase/Login.aspx');
@@ -36,39 +36,31 @@ test('Login and add new vendor with unique phone and email', async ({ page }) =>
   await page.locator('#GlobalNo').check();
   await page.locator('#rbNotComposite').check();
   await page.locator('#NOesi').check();
-
   await page.selectOption('#VENDORCAT1', { label: 'ELECTRICAL VENDORS' });
   await page.locator('#UANN').check();
   await page.locator('#relation_no').check();
   await page.selectOption('#ddl_msme', { label: 'NORMAL VENDOR' });
-
   await page.getByPlaceholder("ENTER VENDOR NAME").fill('Sarika');
   await page.getByPlaceholder("ADD CONTACT NAME").fill('Sarika test');
   await page.getByPlaceholder("Enter Contact Email").fill(uniqueEmail);
   await page.getByPlaceholder("Add Contact No").fill(uniquePhone);
-
   await page.getByPlaceholder("Add Door No & Building Name")
            .fill('126 A MAIN ROAD');
-
   await page.selectOption('#ddl_Country', { label: 'INDIA' });
-
-  // ✅ Scroll main container
   await page.locator('#content').evaluate(el => {
     el.scrollTop = el.scrollHeight;
   });
 
   await page.click('//div[contains(.,"Pincode")]/input[@type="radio"]');
-   await page.waitForTimeout(1000);
+  await page.waitForTimeout(1000);
 
   await page.locator('#PinSearch').type('679304');
   await page.waitForTimeout(1000);
   await page.locator('text=679304').first().click();
   await page.waitForTimeout(1000);
-
   await page.getByPlaceholder("Add City").fill('KANNUR');
   await page.getByPlaceholder("Enter Street & Area")
            .fill('126 A MAIN ROAD');
-
   await page.getByPlaceholder("Add Email id").fill(uniqueEmail);
   await page.getByPlaceholder("Add Phone Number").fill(uniquePhone);
   await page.getByPlaceholder("Add PAN No").fill('ATFPA2435D');
@@ -76,14 +68,19 @@ test('Login and add new vendor with unique phone and email', async ({ page }) =>
 
   // ✅ Date pickers
   await page.getByPlaceholder("Client Registration Date").click();
-  await page.locator('.ui-datepicker-calendar a:text-is("6")').click();
+  await page.locator(".ui-datepicker-year").selectOption('2016');
+  await page.locator('.ui-datepicker-calendar a:text-is("15")').click();
+
+   await page.getByPlaceholder("GST Registration Date").click();
+  await page.locator(".ui-datepicker-year").selectOption('2017');
+  await page.locator('.ui-datepicker-calendar a:text-is("20")').click();
 
   await page.selectOption('#ddl_EST', {
     label: 'Individual/ sole proprietorship'
   });
 
   await page.locator('#VendorDateOfBirth').click();
-  await page.locator('.ui-datepicker-calendar a:text-is("6")').click();
+  await page.locator('.ui-datepicker-calendar a:text-is("23")').click();
 
   // ✅ Confirm (stable)
   const confirmBtn = page.getByRole('button', { name: /confirm/i });
@@ -98,7 +95,6 @@ await expect(successLocator).toBeVisible({ timeout: 10000 });
 // ✅ Capture Vendor ID
 const successText = await successLocator.textContent();
 const vendorId = successText.split(':')[1].trim();
-
 console.log('✅ Vendor ID:', vendorId);
 
 // ✅ Close popup
