@@ -27,7 +27,7 @@ module.exports = defineConfig({
 
         // ✅ Custom test config
         CUSTOMER_APP_URL: 'https://uatonpay.manappuram.com/hyperverge/#/login',
-        CGL_APP_URL: 'https://uatonpay.manappuram.com/cglvapt/index.html',
+        CGL_APP_URL: 'https://uatonpay.manappuram.com/cglautomation/#/login',
 
         credentials: {
           customerEmployeeId: '406653',

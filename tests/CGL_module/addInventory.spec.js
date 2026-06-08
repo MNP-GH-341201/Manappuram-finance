@@ -19,8 +19,8 @@ test('Login and Add Inventory flow', async ({ page }, testInfo) => {
   
   //await this.waitForLoadingToComplete();
   await addInventoryPage.searchCustomerById(
-     '32130020080272',   // ✅ dynamic ID
-    'HGFHGFHF'          // ✅ dynamic name
+     '04310021704577',   // ✅ dynamic ID
+    'Hamsa'          // ✅ dynamic name
   );
 
  // await addInventoryPage.closeDialogs();
