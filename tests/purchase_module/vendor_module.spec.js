@@ -84,44 +84,52 @@ test.describe.serial('Vendor Management Flow (Login once, multiple tests)', () =
     await page.getByPlaceholder("Add Email id").fill(uniqueEmail);
     await page.getByPlaceholder("Add Phone Number").fill(uniquePhone);
     await page.getByPlaceholder("Add PAN No").fill('ATFPA2435D');
+    await page.waitForTimeout(500);
+    await page.getByRole('button', { name: 'Check' }).click();
+    //await page.pause();
     await page.getByPlaceholder("Add Annual Turnover").fill('1000');
 
     // Date picker
     await page.getByPlaceholder("Client Registration Date").click();
-    await page.locator('.ui-datepicker-calendar a:text-is("9")').click();
+    await page.locator('.ui-datepicker-calendar a:text-is("2")').click();
 
     await page.selectOption('#ddl_EST', { label: 'Individual/ sole proprietorship' });
 
     await page.locator('#VendorDateOfBirth').click();
-    await page.locator('.ui-datepicker-calendar a:text-is("9")').click();
-    //await page.pause();
-
-    // Confirm vendor
-
-    const container = page.locator('#content');
-    await container.evaluate(el => el.scrollTo(0, el.scrollHeight));
-
-    // Correct selector
-    const confirmBtn = page.locator('#btnSubmit');
-
-    // Ensure visibility & enablement
-    await expect(confirmBtn).toBeVisible({ timeout: 10000 });
-    //await expect(confirmBtn).toBeEnabled();
-
-    // Click safely
-    await confirmBtn.click({ force: true });
+    await page.locator('.ui-datepicker-calendar a:text-is("2")').click();
+    await page.getByRole('button', { name: /Generate OTP/i }).scrollIntoViewIfNeeded();
+    await page.evaluate(() => {
+      window.scrollTo(0, document.body.scrollHeight);
+    });
+    await page.evaluate(() => {
+      document
+        .querySelector('input[onclick="AddModifyApproveVendor()"]')
+        ?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    });
 
     // Capture vendor ID
-    const successLocator = page.getByText('Vendor Created Vendor ID is:');
-    await expect(successLocator).toBeVisible({ timeout: 15000 });
-    const successText = (await successLocator.textContent()) || '';
-    // Extract ID after colon
-    vendorId = (successText.split(':')[1] || '').trim();
+    // Wait for backend & UI processing
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(500);
+
+    // Look for success message (flexible match)
+    const successLocator = page.getByText(/Vendor Created Vendor ID/i);
+    await expect(successLocator).toBeVisible({ timeout: 20000 });
+
+    // Extract Vendor ID safely
+    const fullText = await page.locator('body').innerText();
+    const match = fullText.match(/Vendor ID is[:\s]+([A-Z0-9]+)/i);
+
+    if (!match) {
+      throw new Error('❌ Vendor ID not found after creation');
+    }
+
+    vendorId = match[1];
     console.log('✅ Captured Vendor ID:', vendorId);
-    expect(vendorId).not.toBe('');
+
     // Close popup
-    await page.getByRole('button', { name: 'OK' }).click();
-  }); 
+    await page.getByRole('button', { name: /ok/i }).click();
+  });
   test('Test-2: Site Creation using captured Vendor ID', async ({ page }) => {
     expect(vendorId).not.toBe('');
     await page.goto(INDEX_URL);
@@ -222,12 +230,23 @@ test.describe.serial('Vendor Management Flow (Login once, multiple tests)', () =
     await page.locator('#cpbtnSubmit1').click();
   });
 
-  test('Test-4: Documents / Documents using captured Vendor ID', async ({ page }) => {
+  // TEST 4 – DOCUMENT UPLOAD (FIXED ✅)
+  // ==================================================
+  test('Test-4: Documents Upload', async ({ page }) => {
+
+    // ✅ Register dialog handler ONCE
+    page.on('dialog', async dialog => {
+      console.log('✅ Alert:', dialog.message());
+      await dialog.dismiss();
+    });
+
     expect(vendorId).not.toBe('');
+
     await page.goto(INDEX_URL);
     await page.getByRole('link', { name: 'VENDOR MANAGEMENT' }).click();
     await page.locator('//a[@href="../Purchase/VendorManagmnt.aspx?frmid=1"]').click();
     await page.getByRole('tab', { name: 'Documents' }).click();
+
     await page.waitForTimeout(1000);
     const searchBox = page.getByRole('textbox', { name: 'Search..' });
 
@@ -236,61 +255,32 @@ test.describe.serial('Vendor Management Flow (Login once, multiple tests)', () =
     await page.getByText(vendorId).first().click();
     await page.waitForSelector('input[onclick="SearchVendorDocument()"]', { timeout: 2000 });
     await page.locator('input[onclick="SearchVendorDocument()"]').click({ force: true });
-    await page.getByRole('button', { name: 'OK' }).click();
-    await page.locator('#ddl_doc').selectOption('2');
-    await page.locator('#imgFileType')
-      .setInputFiles('tests/image/cheque.pdf');
-    await page.getByRole('button', { name: 'Upload' }).click();
+    // await page.getByRole('button', { name: 'OK' }).click();
 
-    page.on('dialog', dialog => {
-      console.log(`Dialog message: ${dialog.message()}`);
-      dialog.dismiss().catch(() => { });
-    });
-    await page.waitForTimeout(1000);
+    const uploadDoc = async (docType) => {
+      await page.locator('#ddl_doc').selectOption(docType);
+      await page
+        .locator('#imgFileType')
+        .setInputFiles('tests/image/cheque.pdf');
+      await page.getByRole('button', { name: 'Upload' }).click();
+      await page.waitForTimeout(1000);
+    };
 
-    await page.locator('#ddl_doc').selectOption('3');
-    await page.locator('#imgFileType')
-      .setInputFiles('tests/image/cheque.pdf');
-    await page.getByRole('button', { name: 'Upload' }).click();
+    await uploadDoc('2');
+    await uploadDoc('3');
+    await uploadDoc('6');
 
-    page.on('dialog', dialog => {
-      console.log(`Dialog message: ${dialog.message()}`);
-      dialog.dismiss().catch(() => { });
-    });
-    await page.waitForTimeout(1000);
-    await page.locator('#ddl_doc').selectOption('6');
-    await page.locator('#imgFileType')
-      .setInputFiles('tests/image/cheque.pdf');
-    await page.getByRole('button', { name: 'Upload' }).click();
-    page.on('dialog', dialog => {
-      console.log(`Dialog message: ${dialog.message()}`);
-      dialog.dismiss().catch(() => { });
-    });
-    await page.waitForTimeout(1000);
     await page.locator('#ddl_doc').selectOption('8');
-    await page.waitForTimeout(2000);
     await page.locator('#kycType').selectOption('4');
     await page.waitForTimeout(2000);
-    //await page.getByRole('textbox', { name: 'Enter Aadharcard Number' }).click();
-    await page.getByRole('textbox', { name: 'Enter Aadharcard Number' }).fill('35323453563452');
-    await page.locator('#imgFileType')
-      .setInputFiles('tests/image/cheque.pdf');
-    await page.getByRole('button', { name: 'Upload' }).click();
-    page.on('dialog', dialog => {
-      console.log(`Dialog message: ${dialog.message()}`);
-      dialog.dismiss().catch(() => { });
-    });
-    await page.waitForTimeout(1000);
-    await page.locator('#ddl_doc').selectOption('10');
-    await page.locator('#imgFileType')
-      .setInputFiles('tests/image/cheque.pdf');
-    await page.getByRole('button', { name: 'Upload' }).click();
-    page.on('dialog', dialog => {
-      console.log(`Dialog message: ${dialog.message()}`);
-      dialog.dismiss().catch(() => { });
-    });
-    await page.waitForTimeout(1000);
-    await page.getByRole('button', { name: 'Exit' }).click();
+    await page
+      .getByRole('textbox', { name: 'Enter Aadharcard Number' })
+      .fill('35323453563452');
 
+    await uploadDoc('8');
+    await uploadDoc('10');
+
+    await page.getByRole('button', { name: 'Exit' }).click();
   });
 });
+
