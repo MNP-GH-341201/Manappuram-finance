@@ -8,22 +8,24 @@ module.exports = defineConfig({
 
   projects: [
     {
-      name: 'microsoft (Installed)',
+      name: 'firefox',
       use: {
-        browserName: 'chromium',     // ✅ Use chromium engine
-        channel: 'msedge',           // ✅ Correct channel for Edge
+        browserName: 'firefox',
+        channel: 'firefox',
         headless: false,
+        viewport: null,
         slowMo: 800,
-
+  launchOptions:{
+  firefoxUserPrefs: {
+    "media.navigator.permission.disabled": true,
+        }
+      },
         // ✅ Enable permissions
-        permissions: ['camera', 'microphone'],
+        //permissions: ['camera', 'microphone'],
 
-        launchOptions: {
-          args: [
-            '--use-fake-ui-for-media-stream',     // ✅ auto-click Allow
-            '--use-fake-device-for-media-stream'  // ✅ fake camera/mic
-          ],
-        },
+        // 
+  
+
 
         // ✅ Custom test config
         CUSTOMER_APP_URL: 'https://uatonpay.manappuram.com/hyperverge/#/login',
