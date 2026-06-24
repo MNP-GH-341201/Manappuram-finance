@@ -15,28 +15,25 @@ module.exports = defineConfig({
 
   projects: [
     {
-      name: 'Chrome (Installed)',
-      use: {
-        browserName: 'chromium',
-        channel: 'chrome',
-        headless: false,
-        slowMo: 800,
+      
+name: 'firefox',
+  use: {
+    browserName: 'firefox',
+    channel: 'firefox',
+    headless: false,
+    permissions: ['camera', 'microphone'],
+    launchOptions: {
+      args: [
+        '--use-fake-device-for-media-stream',
+      ],
+    },
 
-        // ✅ AUTO‑ALLOW CAMERA & MIC
-        permissions: ['camera', 'microphone'],
 
-        launchOptions: {
-          args: [
-           // auto‑click Allow
-            '--use-fake-device-for-media-stream', // fake camera device
-          ],
-        },
-
-        CUSTOMER_APP_URL: 'https://uatonpay.manappuram.com/hyperverge/#/login',
+        CUSTOMER_APP_URL: 'https://uatonpay.manappuram.com/hyperverge/#/',
         CGL_APP_URL: 'https://uatonpay.manappuram.com/cglvapt/index.html',
 
         credentials: {
-          customerEmployeeId: '406653',
+          customerEmployeeId: '321702',
           customerPassword: 'soft1234',
           CGL_employeeId: '98118',
           CGL_employeePassword: 'soft1234',
