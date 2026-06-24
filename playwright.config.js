@@ -1,38 +1,30 @@
 const { defineConfig } = require('@playwright/test');
-
 module.exports = defineConfig({
   testDir: './tests',
   timeout: 60 * 1000,
-
   expect: {
-    timeout: 5000,
+  timeout: 5000,
   },
-
   fullyParallel: false,
   workers: 1,
-
   reporter: [['html', { open: 'never' }]],
-
   projects: [
     {
-      
-name: 'firefox',
-  use: {
-    browserName: 'firefox',
-    channel: 'firefox',
-    headless: false,
-    permissions: ['camera', 'microphone'],
-    launchOptions: {
-      args: [
-        '--use-fake-device-for-media-stream',
-      ],
-    },
-
-
+      name: 'firefox',
+      use: {
+        browserName: 'firefox',
+        channel: 'firefox',
+        headless: false,
+        viewport: null,
+        slowMo: 800,
+  launchOptions:{
+  firefoxUserPrefs: {
+    "media.navigator.permission.disabled": true,
+        }
+      },
         CUSTOMER_APP_URL: 'https://uatonpay.manappuram.com/hyperverge/#/',
         CGL_APP_URL: 'https://uatonpay.manappuram.com/cglvapt/index.html',
-
-        credentials: {
+  credentials: {
           customerEmployeeId: '321702',
           customerPassword: 'soft1234',
           CGL_employeeId: '98118',
