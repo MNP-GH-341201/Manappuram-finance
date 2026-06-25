@@ -8,12 +8,10 @@ class AddInventoryPage {
     this.page = page;
 
     
-this.page.on('dialog', async dialog => {
+    this.page.on('dialog', async dialog => {
       console.log('Browser dialog:', dialog.message());
       await dialog.accept();
     });
-
-
     this.menuBar = page.locator(inventoryCreationLocators.menubar);
     this.inventoryMenu = page.locator(inventoryCreationLocators.inventoryMenu);
     this.addInventoryButton = page.locator(inventoryCreationLocators.addInventoryButton);
@@ -41,9 +39,7 @@ this.page.on('dialog', async dialog => {
     await this.iUnderstandBtn.click();
   }
 
-  
-
-async handleAllDialogs() {
+  async handleAllDialogs() {
     for (let i = 0; i < 5; i++) {
       const dialog = this.page.locator('.cdk-overlay-pane');
       const okButton = dialog.getByRole('button', { name: /ok/i });
@@ -84,11 +80,11 @@ async handleAllDialogs() {
     await searchButton.click();
     await this.page.getByRole('gridcell', { name: customerName }).click();
     
-await this.goToDetailsBtn.waitFor({ state: 'visible' });
+    await this.goToDetailsBtn.waitFor({ state: 'visible' });
     await this.goToDetailsBtn.click();
 
     // ✅ Handle dialogs again
-    await this.handleAllDialogs();
+    // await this.handleAllDialogs();
 
     // ✅ Select Item
     await expect(this.selectItemBtn).toBeVisible();
@@ -98,19 +94,19 @@ await this.goToDetailsBtn.waitFor({ state: 'visible' });
     await expect(itemOption).toBeVisible();
     await itemOption.click();
 
-    await this.handleAllDialogs();
+    // await this.handleAllDialogs();
 
     // ✅ Specification
     await this.specification.click();
     await this.page.getByRole('option', { name: 'OLD ITEM' }).click();
 
     // ✅ Type
-    await this.handleAllDialogs();
+    // await this.handleAllDialogs();
     await this.type.click();
     await this.page.getByRole('option', { name: 'SOLDERING', exact: true }).click();
 
     // ✅ Purity
-    await this.handleAllDialogs();
+    // await this.handleAllDialogs();
     await this.Purity.click();
     await this.page.getByRole('option', { name: 'Purity-17-ct' }).click();
 
@@ -125,14 +121,14 @@ await this.goToDetailsBtn.waitFor({ state: 'visible' });
     await this.page.getByPlaceholder('Stone Weight').fill('2');
 
     // ✅ Damage type
-    await this.handleAllDialogs();
+    // await this.handleAllDialogs();
     await this.damageTypes.click();
     const damageOption = this.page.getByRole('option', { name: 'Fold' });
     await damageOption.waitFor();
     await damageOption.click();
 
     // ✅ Remarks
-    await this.handleAllDialogs();
+    // await this.handleAllDialogs();
     await this.remarks.fill('Testing automation');
 
     // ✅ Add Item
@@ -152,17 +148,18 @@ await this.goToDetailsBtn.waitFor({ state: 'visible' });
     const captureBtn = this.page.getByRole('button', { name: /capture/i });
     await expect(captureBtn).toBeVisible();
 
-    await this.handleAllDialogs();
-    await captureBtn.click();
+    // await this.handleAllDialogs();
+    await captureBtn.click({force:true});
 
     const proceedButton = this.page.getByRole('button', { name: 'Proceed' });
     await expect(proceedButton).toBeVisible();
 
-    await this.handleAllDialogs();
-    await proceedButton.click();
+    // await this.handleAllDialogs();
+    await proceedButton.click({force:true});
+    await this.page.pause()
 
     // ✅ Final dialog safety
-    await this.handleAllDialogs();
+    // await this.handleAllDialogs();
   }
 
 }
