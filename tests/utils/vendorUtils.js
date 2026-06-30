@@ -15,6 +15,40 @@ export async function searchVendorAndSelect(page, vendorId) {
   await page.getByText(vendorId).first().click();
 }
 
+export async function searchVendorDocument(page, vendorID) {
+  const searchBox = page.locator('#txtSearch3');
+
+  await searchBox.click();
+  await searchBox.fill('');
+  await searchBox.type(vendorID, { delay: 100 });
+
+  // Wait for dropdown options to appear
+  const dropdownOption = page.locator('#txtSearch3autocomplete-list');
+  await dropdownOption.click();
+
+  // await dropdownOption.waitFor({ state: 'visible', timeout: 10000 });
+
+  // // Ensure exact matching (avoid TEST suffix issue)
+  // const options = page.locator('li');
+
+  // const count = await options.count();
+
+  // for (let i = 0; i < count; i++) {
+  //   const text = await options.nth(i).innerText();
+
+  //   if (text.startsWith(vendorID)) {
+  //     await options.nth(i).click();
+  //     break;
+  //   }
+  // }
+
+  // Click search button
+  await page.locator('#btnSearch3').click({force:true});
+
+  // ✅ Wait for API/response instead of timeout
+  await page.waitForLoadState('networkidle');
+}
+
 export async function uploadVendorDocument(page, {
   docValue,
   filePath,
@@ -50,7 +84,7 @@ if (aadharValue) {
     page.getByRole('button', { name: 'Upload' }),
     { ignoreTexts: ignoreDialogTexts, timeout: 2500 }
   );
-
+ 
   await page.waitForLoadState('networkidle').catch(() => {});
 }
 
@@ -60,4 +94,16 @@ export async function expectTextAndExtractAfterColon(page, containsText, timeout
   const text = (await loc.textContent()) || '';
   const value = (text.split(':')[1] || '').trim();
   return value;
+}
+
+export async function handlePopup(page) {
+  try {
+    const okButton = page.getByRole('button', { name: /^OK$/i });
+
+    if (await okButton.isVisible({ timeout: 3000 })) {
+      await okButton.click();
+    }
+  } catch {
+    // No popup found
+  }
 }
