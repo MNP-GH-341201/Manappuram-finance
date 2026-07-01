@@ -146,7 +146,7 @@ class AddInventoryPage {
     await expect(video).toBeVisible({ timeout: 20000 });
 
     const captureBtn = this.page.getByRole('button', { name: /capture/i });
-    await expect(captureBtn).toBeVisible();
+    await expect(captureBtn).toBeEnabled({ timeout: 100000 });
 
     // await this.handleAllDialogs();
     await captureBtn.click({force:true});
