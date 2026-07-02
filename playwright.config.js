@@ -30,12 +30,15 @@ module.exports = defineConfig({
         // ✅ Custom test config
         CUSTOMER_APP_URL: 'https://uatonpay.manappuram.com/hyperverge/#/login',
         CGL_APP_URL: 'https://uatonpay.manappuram.com/cglautomation/#/login',
+        LOS_APP_URL: 'https://uatngl.manappuram.com/los/#/login',
 
         credentials: {
           customerEmployeeId: '406653',
           customerPassword: 'soft1234',
           CGL_employeeId: '98118',
           CGL_employeePassword: 'soft1234',
+          LOS_employeeId: '369343',
+          LOS_employeePassword: 'soft1234',
         },
       },
     },

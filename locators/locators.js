@@ -40,11 +40,17 @@ const inventoryCreationLocators = {
   inventoryMenu: "(//span[@class='mat-button-wrapper'])[11]",
   addInventoryButton: "//a[@id='menu-item-14']//span[@class='menu-title'][normalize-space()='Add Inventory']",
 };
-
+const losLoginLocators = {
+  usernameIdInput: "input[id='username']",
+  passwordInput: "input[formcontrolname='password']",
+  loginButton: "button[type='submit']",
+  branchText: "text=Loan Originating System",
+};
 module.exports = {
   cameraFrameLocators,
   customerVerificationLocators,
   loginLocators,
   CGLloginLocators,
   inventoryCreationLocators,
+  losLoginLocators,
 };

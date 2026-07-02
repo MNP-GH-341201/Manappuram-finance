@@ -156,7 +156,7 @@ class AddInventoryPage {
 
     // await this.handleAllDialogs();
     await proceedButton.click({force:true});
-    await this.page.pause()
+    //await this.page.pause()
 
     // ✅ Final dialog safety
     // await this.handleAllDialogs();
